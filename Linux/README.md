@@ -1714,3 +1714,166 @@ Understanding parent-child relationships among processes helps analyze system be
   pstree -p
   ```
   - Shows processes along with their PIDs.
+---
+## Introduction to CronTab
+CronTab allows scheduling of recurring tasks such as backups, system updates, and cleanup scripts.
+
+### **Understanding the CronTab Syntax:**
+CronTab entries have five fields:
+```
+* * * * * command_to_execute
+- - - - -
+| | | | |
+| | | | +----- Day of the week (0 - 7) (Sunday = 0 or 7)
+| | | +------- Month (1 - 12)
+| | +--------- Day of the month (1 - 31)
+| +----------- Hour (0 - 23)
++------------- Minute (0 - 59)
+```
+
+### **Creating and Managing Cron Jobs:**
+- **View Existing Cron Jobs:**
+```bash
+crontab -l
+```
+- **Edit Cron Jobs:**
+```bash
+crontab -e
+```
+- **Delete All Cron Jobs:**
+```bash
+crontab -r
+```
+
+### **Practical Examples:**
+1. **Automate Backups Every Day at Midnight:**
+```bash
+0 0 * * * tar -czvf /backup/home_$(date +\%F).tar.gz /home/user/
+```
+2. **Clean Temporary Files Every Week:**
+```bash
+0 0 * * 0 rm -rf /tmp/*
+```
+3. **Run a System Update Every Month:**
+```bash
+0 2 1 * * apt-get update && apt-get upgrade -y
+```
+
+### **Validate Cron Jobs:**
+Use the `journalctl` command to check logs and ensure jobs run as scheduled:
+```bash
+journalctl -u cron
+```
+
+---
+
+# Cron Jobs - Automated Task Scheduling in Linux
+
+This guide demonstrates how to schedule tasks in Linux using `cron`. Below are various examples of creating files, directories, and deleting them automatically based on specific schedules.
+
+---
+
+## 1. **Create a File on 29th Dec 2024**
+
+This cron job creates a file `/abc.txt` on **29th December 2024 at midnight (00:00)**.
+
+### Cron Job:
+
+```bash
+0 0 29 dec * /bin/touch /abc.txt
+```
+
+### Steps:
+
+1. Change the system date to simulate the execution time:
+
+    ```bash
+    sudo date -s "23:59:50 28 dec 2024"
+    ```
+
+2. Verify the cron job is added by running:
+
+    ```bash
+    crontab -l
+    ```
+
+---
+
+## 2. **Delete File on 30th Dec 2024**
+
+This cron job deletes the file `/abc.txt` on **30th December 2024 at midnight (00:00)**.
+
+### Cron Job:
+
+```bash
+0 0 30 dec * /bin/rm -f /abc.txt
+```
+
+### Steps:
+
+1. Change the system date to simulate the execution time:
+
+    ```bash
+    sudo date -s "23:59:50 29 dec 2024"
+    ```
+
+---
+
+## 3. **Create Directory on 10th September 2024 at 20:45**
+
+This cron job creates a directory `/root/abc` on **10th September 2024 at 20:45**.
+
+### Cron Job:
+
+```bash
+45 20 10 sep * /bin/mkdir -p /root/abc/
+```
+
+### Steps:
+
+1. Change the system date to simulate the execution time:
+
+    ```bash
+    sudo date -s "2024-09-10 20:45:00"
+    ```
+
+---
+
+## 4. **Create Directory Every Weekday (Monday to Friday) at 7:00 AM**
+
+This cron job creates a directory `/home/student/weekly_dir` **every weekday at 7:00 AM** (Monday to Friday).
+
+### Cron Job:
+
+```bash
+0 7 * * 1-5 /bin/mkdir -p /home/student/weekly_dir
+```
+
+### Steps:
+
+1. Change the system date to simulate the execution time on **Monday at 7:00 AM**:
+
+    ```bash
+    sudo date -s "2024-09-09 07:00:00"
+    ```
+
+---
+
+## 5. **Create a File Every Minute**
+
+This cron job creates a new file every minute with a unique timestamp in the name. The file is saved under `/home/student/`.
+
+### Cron Job:
+
+```bash
+* * * * * /bin/touch /home/student/minute_file_$(date +\%Y\%m\%d_\%H\%M\%S).txt
+```
+
+### Explanation:
+- `* * * * *`: Runs the task **every minute**.
+- `/bin/touch`: Command to create an empty file.
+- `/home/student/minute_file_$(date +\%Y\%m\%d_\%H\%M\%S).txt`: 
+  - Creates a file with a unique name using the date and time format.
+  - `$(date +\%Y\%m\%d_\%H\%M\%S)` generates a timestamp like `20231221_153001`.
+
+---
